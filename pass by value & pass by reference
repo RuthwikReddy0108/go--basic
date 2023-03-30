@@ -1,0 +1,33 @@
+package main
+
+import "fmt"
+
+func passByValue(pbv int) {
+	pbv = 7
+	fmt.Println("Inside passByValue function, pbv =", pbv)
+}
+
+func passByReference(pbr *int) {
+	*pbr = 9
+	fmt.Println("Inside passByReference function, *pbr =", *pbr)
+}
+
+func main() {
+	x := 15
+
+	pbv := x
+	passByValue(pbv)
+	fmt.Println("After passByValue function, x =", x, "pbv =", pbv)
+
+	pbr := &x
+	passByReference(pbr)
+	fmt.Println("After passByReference function, x =", x, "pbr =", *pbr)
+}
+
+
+This programme has two functions: passByValue and passByReference. The passByValue method returns the value "10" for an integer input, x. Yet, the initial value of value in the main function remains unchanged since x is supplied by value rather than by reference.
+
+The input (*int) for the passByReference function, on the other hand, is a reference to an integer. When the pointer has been dereferenced with the * operator, the variable referred to by the pointer (*x) is then assigned the value 10. Since reference is supplied via reference, the value of reference in the main function has been modified to 10. (i.e., as a pointer).
+This illustrates the distinction between passing a variable by value and passing a variable by reference. When we send a variable by value, a copy of its value is made and provided to the function; hence, changes made to the value inside the function do not impact the original variable. A variable is pointed to when it is sent by reference, allowing the original variable to be affected by changes made to its value inside the function.
+
+In conclusion, pass by reference allows the function to edit the original variable directly by supplying its address, whereas pass by value produces a copy of the value of a variable and any changes performed inside the function do not impact the original variable.
