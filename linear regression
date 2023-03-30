@@ -1,0 +1,63 @@
+package main
+
+import (
+	"encoding/csv"
+	"fmt"
+	"log"
+	"math"
+	"os"
+	"strconv"
+
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
+	"gonum.org/v1/plot/vg"
+)
+
+func main() {
+	// Load the dataset
+	file, err := os.Open("cancer patient data sets.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	// Read the data into slices
+	var x []float64
+	var y []float64
+	reader := csv.NewReader(file)
+	reader.FieldsPerRecord = -1
+	records, _ := reader.ReadAll()
+	for _, record := range records {
+		xVal, _ := strconv.ParseFloat(record[0], 64)
+		yVal, _ := strconv.ParseFloat(record[1], 64)
+		x = append(x, xVal)
+		y = append(y, yVal)
+	}
+
+	// Compute the coefficients of the regression line
+	var sumX, sumY, sumXY, sumX2 float64
+	n := float64(len(x))
+	for i := 0; i < len(x); i++ {
+		sumX += x[i]
+		sumY += y[i]
+		sumXY += x[i] * y[i]
+		sumX2 += math.Pow(x[i], 2)
+	}
+	m := (n*sumXY - sumX*sumY) / (n*sumX2 - math.Pow(sumX, 2))
+	b := (sumY - m*sumX) / n
+
+	// Print the equation of the regression line
+	fmt.Printf("y = %.2fx + %.2f\n", m, b)
+
+	// Plot the data and regression line
+	p, _ := plot.New()
+	points := make(plotter.XYs, len(x))
+	for i := range points {
+		points[i].X = x[i]
+		points[i].Y = y[i]
+	}
+	line := plotter.NewFunction(func(x float64) float64 { return m*x + b })
+	p.Add(plotter.NewGrid(), plotter.NewScatter(points), line)
+	p.Title.Text, p.X.Label.Text, p.Y.Label.Text = "Linear Regression", "X", "Y"
+	p.Save(4*vg.Inch, 4*vg.Inch, "regression.png")
+}
